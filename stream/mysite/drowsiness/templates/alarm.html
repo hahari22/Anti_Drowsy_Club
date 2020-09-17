@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>Chat Rooms</title>
+</head>
+<body>
+    Listen to your alarm sound?<br/>
+    <p id='path' style='display: none;'>{{results.text}}</p>
+    <script type="text/javascript"> 
+        
+        var audio = new Audio();
+        
+        audio.src = '../' + document.querySelector('#path').innerText
+        
+    </script>
+    <input type="button" onClick="audio.play();" value="PLAY"/>
+    <input type="button" onClick="audio.pause();" value="PAUSE"/>
+    <input type="number" onChange="audio.volume=this.value"/>
+</body>
+</html>
