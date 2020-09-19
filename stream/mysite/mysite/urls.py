@@ -23,22 +23,24 @@ from django.conf import settings
 urlpatterns = [
     #home
     path('home', views.home, name='home'),
+    #모델 관리
     path('admin/', admin.site.urls),
     # 웹캠 스트리밍이 이루어지는 path
     path('stream/', include('drowsiness.urls')),
-    path('setting/', views.setting, name='setting'),
     # 알람을 설정하는 path
     path('alarm/<int:user_pk>', views.alarm, name='alarm'),
-    # 미디어 관련 path
-    path('media', views.media, name='media'),
     # authentication
     path('signup/', views.signup, name='signup'),
     path('about/', views.about, name='about'),
     path('login/', views.login, name='login'),
     path('logout/', views.logout, name='logout'),
+    # tts 설정
     path('tts/<int:user_pk>', views.tts, name='tts'),
-    path('signup/eye/', views.eye, name='eye')
-    # path('upload_files/<str:name>', views.media_serve, name='media_serve')
+    path('signup/eye/', views.eye, name='eye'),
+    # tts 교체
+    path('change_tts/<int:user_pk>', views.change_tts, name='change_tts'),
+    # tts url 얻기
+    path('get_tts_url/', views.get_tts_url, name='get_tts_url')
+    
 ]
-# urlpatterns += url('upload_files/<str:name>', views.media_serve, name='media_serve')
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -10,17 +10,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate 
 import django.contrib.auth as auth
 
+import json
+
 # Create your views here. 
 
 #Web Cam Streaming
-
-def setting(request): # 알람을 만드는 부분 입니다.
-    if request.method == 'GET' :
-        return render(request, 'chat/setting.html',{})
-    elif request.method == 'POST':
-        content = request.POST['sound-content-input']
-        name = TTS.make_tts(content)
-        return HttpResponse(name)
 
 def alarm(request, user_pk): # 알람을 확인하는 부분
     if request.method == 'GET':
@@ -34,31 +28,12 @@ def alarm(request, user_pk): # 알람을 확인하는 부분
 
         return render(request, 'alarm.html',context)
 
-def media(request): # 알람 파일을 올리는 부분
-    if request.method=='GET':
-        return render(request, 'media.html', {})
-    else:
-        file = request.FILES['sori']
-        Sound.objects.create(
-            title = 'alarm',
-            alarm = file
-        )
-
-        return redirect('media')
-
-    
-def room(request, room_name): # get 요처으로 웹캠 스트리밍을 시작하기 위한 처리.
+def room(request, room_name): # get 요청으로 웹캠 스트리밍을 시작하기 위한 처리.
     return render(request, 'chat/room.html',{
         'room_name':room_name
     })
 
-def media_serve(request, name):
-    print('hi',name)
-    file_path = os.path.join(settings.BASE_DIR, name)
-    print('hi',file_path)
-    return FileResponse(open(file_path, 'rb'), content_type=mimetypes.guess_type(file_path)[0])
-
-
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #authentication
 
@@ -230,6 +205,35 @@ def tts(request, user_pk):
             user_info = user.streamer
         )
 
-        return redirect('home') 
+        return redirect('../stream/green/')
 
     else : return render(request, 'tts.html', {'user_pk':user_pk})
+
+def change_tts(request, user_pk):
+
+    user = User.objects.get(pk=user_pk)
+    text = user.streamer.tts.text
+
+    content = request.POST['text']
+
+    name = TTS.change_tts(text, content)
+
+    tts_val = TTS_text.objects.filter(text = text)
+    tts_val.update(
+            text = name
+        )
+
+    return HttpResponse(name)
+
+
+def get_tts_url(request):
+    
+    user_pk = request.POST.get('pk', None)
+    print(user_pk)
+    user = User.objects.get(pk=int(user_pk))
+    context = {
+        'tts_url': user.streamer.tts.text
+    }
+
+    return HttpResponse(json.dumps(context), content_type="application/json")
+

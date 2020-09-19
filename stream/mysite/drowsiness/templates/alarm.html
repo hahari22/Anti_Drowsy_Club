@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% load static %}
     <meta charset="utf-8"/>
     <title>Chat Rooms</title>
+    <link rel="stylesheet" href="{% static 'assets/css/main.css' %}" />
+	<noscript><link rel="stylesheet" href= "{% static 'assets/css/noscript.css' %}" /></noscript>
 </head>
 <body>
+    <br/>
     Listen to your alarm sound?<br/>
     <p id='path' style='display: none;'>{{results.text}}</p>
     <script type="text/javascript"> 
@@ -16,6 +20,24 @@
     </script>
     <input type="button" onClick="audio.play();" value="PLAY"/>
     <input type="button" onClick="audio.pause();" value="PAUSE"/>
-    <input type="number" onChange="audio.volume=this.value"/>
+    <!-- <input type="number" onChange="audio.volume=this.value"/> -->
+
+    <br/><br/><br/>
+    <a>Are you change your alarm?</a>
+    <form action="{% url 'change_tts' user.pk %}" method="POST">
+    {% csrf_token %}
+        <div>
+            <div class="row">
+                <div class="col-12">
+                    알람으로 듣고 싶은 말을 적어주세요:)
+                    <input type="text" name="text" placeholder="ex) 길동아~ 세수하고오자" />
+                </div>
+                <div class="col-12">
+                    <button type="submit">ENTER</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
 </body>
 </html>

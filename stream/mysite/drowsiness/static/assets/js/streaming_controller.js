@@ -37,7 +37,7 @@ function printClock(superDate) {
     }
 
     if(currentSeconds >= 50){// 50초 이상일 때 색을 변환해 준다.
-    currentSeconds = '<span style="color:#de1951;">'+currentSeconds+'</span>'
+        currentSeconds = '<span style="color:#de1951;">'+currentSeconds+'</span>'
     }
     clock.innerHTML = currentHours+":"+currentMinute+":"+currentSeconds +" <span style='font-size:20px;'>"+ amPm+"</span>"; //날짜를 출력해 줌
 

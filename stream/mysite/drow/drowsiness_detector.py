@@ -113,7 +113,8 @@ class Drowsiness:
 
     def wake_up(self):
         print('wake up')
-        alarm.sound_alarm(self.thema)
+        if self.thema != None:
+            alarm.sound_alarm(self.thema)
 
     #####################################################################################################################
     #1. Variables for checking EAR.
@@ -150,7 +151,9 @@ class Drowsiness:
 
         #8.
         print("starting video stream thread...")
-        vs = VideoStream(src=0).start()
+
+        vs = cv2.VideoCapture(0)
+
         self.camera = vs
         time.sleep(1.0)
 
@@ -162,20 +165,26 @@ class Drowsiness:
         self.th_close.deamon = True
         self.th_close.start()
 
+        FPS = 60 # 현재 원하는  프레임 수
+        prev_time = 0
         #####################################################################################################################
         try:
             while self.trigger is not None:
-                frame = vs.read()
-                frame = imutils.resize(frame, width = 900)
+
+                ret, frame = vs.read()
+                current_time = time.time() - prev_time
+
+                if (ret is not True) or (current_time <= 1./ FPS):
+                    continue
+
+                prev_time = time.time()
+
+                frame = cv2.flip(frame,1)
                 
                 L, gray = lr.light_removing(frame)
                 
                 rects = detector(gray,0)
                 
-                #checking fps. If you want to check fps, just uncomment below two lines.
-                #prev_time, fps = check_fps(prev_time)
-                #cv2.putText(frame, "fps : {:.2f}".format(fps), (10,130), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200,30,20), 2)
-
                 for rect in rects: #인식된 얼굴 갯 수 만큼
                     shape = predictor(gray, rect) # 인식된 얼굴의 68개의 좌표값들을 얻는다.
                     shape = face_utils.shape_to_np(shape) # 68개의 좌표 값을 넘파이 배열로 받아온다.
@@ -223,9 +232,6 @@ class Drowsiness:
                                 print("{0}st ALARM".format(self.ALARM_COUNT)) # 알람이 몇번째 인지
                                 print("The time eyes is being opened before the alarm went off :", OPENED_EYES_TIME) #알람이 울리기 전에 눈이 뜨는 시간
                                 print("closing time :", closing_time) # 눈을 감고 있는 시간
-                                test_data.append([OPENED_EYES_TIME, round(closing_time*10,3)]) # 조는데 걸리는 텀과 졸았던 시간을 테스트 데이터에 저장
-                                result = mtd.run([OPENED_EYES_TIME, closing_time*10], power, nomal, short) # 훈련 데이터에 똑같이 보낸다.
-                                result_data.append(result)
                                 t = Thread(target = self.wake_up, args = ()) #알람을 울리는 쓰레드를 작동 시킨다.
                                 t.deamon = True
                                 t.start()
@@ -248,7 +254,6 @@ class Drowsiness:
                         cv2.putText(frame, "EAR : {:.2f}".format(self.both_ear), (300,130), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200,30,20), 2)
                     #인식된 얼굴에 한해서 눈을 감고 있나 뜨고 있나에 대한 눈꺼풀 사이의 거리를 표시해 준다.
 
-                # cv2.imshow("Frame",frame)
                 ret, jpeg = cv2.imencode('.jpg', frame)
                 self.frame = jpeg
                 self.check = True
@@ -265,5 +270,5 @@ class Drowsiness:
         
     def stop(self):
         self.trigger = None
-        (self.camera).stop()
-        (self.camera).stream.release()
+        self.camera.release()
+        self.thema = None

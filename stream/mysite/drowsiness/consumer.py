@@ -50,7 +50,7 @@ class ChatConsumer(WebsocketConsumer):
                 print('ended 🎶', ex)
 
     def circle(self):
-        time.sleep(3)
+        time.sleep(2)
         
         while self.camera is not None:
             try:

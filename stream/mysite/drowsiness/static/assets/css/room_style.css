@@ -1,7 +1,10 @@
 
 body{
     overflow: hidden; /* Hide scrollbars */
-    background-color:lightslategray ;
+    background-image: url("images/overlay.png"), url("images/bg7.jpg");
+    background-repeat: repeat, no-repeat;
+    background-size: auto, 100% 100%;
+    background-attachment: fixed;
 }
 
 .container{
@@ -20,11 +23,6 @@ body{
     z-index: 1;
 }
 
-/* .item:nth-child(2){
-    z-index: -1;
-    transform: scale(3);
-} */
-
 #web_cam{
     height: 100%;
 }
@@ -38,16 +36,6 @@ body{
     align-items: center;
     background-color: azure;
 }
-
-/* .back{
-    position: relative;
-    background-color: black;
-    width : 2000px;
-    height : 1000px;
-    opacity: 0.8;
-    z-index: -1;
-} */
-
 
 .wrap {
     height: 100%;
