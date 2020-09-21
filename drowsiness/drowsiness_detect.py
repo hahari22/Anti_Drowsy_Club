@@ -11,19 +11,22 @@ import time
 import dlib
 import cv2
 import os
-
+import time
 from gtts import gTTS
-text ="상민아아아 일어나자아아아!!"
+
+
+text ="상민아 뭐해 일어나야지"
 
 tts = gTTS(text=text, lang='ko')
 tts.save("%s.mp3" % os.path.join('audio/',"tts"))
+# 만들어진 tts를 aduio로 저장
+
 #Initialize Pygame and load music
 pygame.mixer.init()
-#pygame.mixer.music.load('audio/alert.wav')
 pygame.mixer.music.load('audio/tts.mp3')
-#cv2.imwrite(os.path.join(path, str(now) + ".png"), frame)
+#pygame을 이용하여 tts.mp3틀기
 #Minimum threshold of eye aspect ratio below which alarm is triggerd
-EYE_ASPECT_RATIO_THRESHOLD = 0.2
+EYE_ASPECT_RATIO_THRESHOLD = 0.3
 
 #Minimum consecutive frames for which eye ratio is below threshold for alarm to be triggered
 EYE_ASPECT_RATIO_CONSEC_FRAMES = 50
@@ -38,7 +41,7 @@ face_cascade = cv2.CascadeClassifier("haarcascades/haarcascade_frontalface_defau
 # 있고, 트레이닝 시킨 학습 데이터를 파일로 저장하여, 검출기를 이용하여 특정이미지에서 
 # 자동차를 검출할 수 있다.
 
-# haar-cascade 검출기는 학습데이터를 이용해서 이미젱서 특정 객체를 검출하는 역할을 함.
+# haar-cascade 검출기는 학습데이터를 이용해서 이미지에서 특정 객체를 검출하는 역할을 함.
 # 사람의 정면을얼굴과 사람 눈에 대한 haar-cascade를 가지고 있음
 
 
@@ -53,6 +56,7 @@ def eye_aspect_ratio(eye):
 
 #Load face detector and predictor, uses dlib shape predictor file
 detector = dlib.get_frontal_face_detector()
+
 # 얼굴 인식용 클래스 생성(기본 제공되는 얼굴 인식 모델 사용)
 predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 # 인식된 얼굴에서 랜드마크 찾기위한 클래스 생성
@@ -61,24 +65,36 @@ predictor = dlib.shape_predictor('shape_predictor_68_face_landmarks.dat')
 (lStart, lEnd) = face_utils.FACIAL_LANDMARKS_IDXS['left_eye']
 (rStart, rEnd) = face_utils.FACIAL_LANDMARKS_IDXS['right_eye']
 
-#Start webcam video capture
+# 비디오 캡쳐 객체를 생성
+# 캠이 한개만 부착되어 있으면 0, 2개 이상이면 첫번째 웹캡은 0, 두번깨는 1로 지정 
 video_capture = cv2.VideoCapture(0)
 
-#Give some time for camera to initialize(not required)
+# 2초동안 프로세스를 일시정지(캠켜지는 시간을 고려)
 time.sleep(2)
+
+# 음악이 끊기지 않게 하기 위한 변수
+flag=False
+# 시간을 재기 위한 변수
+cnt=0
 
 while(True):
     #Read each frame and flip it, and convert to grayscale
-    ret, frame = video_capture.read()
+    start=time.time() # 시간재기 시작
+    ret, frame = video_capture.read() 
+    # 비디오의 한 프레임씩 읽어옴. 
     frame = cv2.flip(frame,1)
+    # 화면을 좌우 반전시켜줌
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # frame을 흑백으로 변환
 
     #Detect facial points through detector function
     faces = detector(gray, 0)
 
     #Detect faces through haarcascade_frontalface_default.xml
     face_rectangle = face_cascade.detectMultiScale(gray, 1.3, 5)
-    now = datetime.datetime.now().strftime("%d_%H:%M:%S")
+    now = datetime.datetime.now().strftime("%d_%H-%M-%S")
+    # 날짜를 표현하는 함수(나중에 사진 캠쳐했을때 이름으로 쓸 예정)
+    # d:일수, H:시간, M:분, S:초
     #datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     #Draw rectangle around each face detected
@@ -108,24 +124,36 @@ while(True):
         cv2.drawContours(frame, [leftEyeHull], -1, (0, 255, 0), 1)
         cv2.drawContours(frame, [rightEyeHull], -1, (0, 255, 0), 1)
 
-        #Detect if eye aspect ratio is less than threshold
+        # THreshold만큼 눈이 감기면 졸린걸로 간주
         if(eyeAspectRatio < EYE_ASPECT_RATIO_THRESHOLD):
             COUNTER += 1
             #If no. of frames is greater than threshold frames,
             if COUNTER >= EYE_ASPECT_RATIO_CONSEC_FRAMES:
-                pygame.mixer.music.play(-1)
-                path="result"
-                cv2.putText(frame, "You are Drowsy", (160,90), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,255), 2)
-                cv2.imwrite(os.path.join(path, str(now) + ".png"), frame)
+                if (not flag):
+                    pygame.mixer.music.play(-1) # 종료시까지 음악 반복.
+                    path="result" #사진 저장할 경로
+                    cv2.putText(frame, "You are Drowsy", (160,90), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0,0,255), 2)
+                    cv2.imwrite(os.path.join(path, str(now) + ".png"), frame)
+                    # 사진 저장 이름과 경로 지정
+                    flag=not flag
+                cnt+=1
+                if (cnt%10000000==1):
+                    flag=not flag
         else:
             pygame.mixer.music.stop()
             COUNTER = 0
 
     #Show video feed
     cv2.imshow('Video', frame)
-    if(cv2.waitKey(1) & 0xFF == ord('q')):
+    if(cv2.waitKey(1) & 0xFF == ord('q')): # q를 누르면 종료
+        end=time.time()
+        
         break
 
 #Finally when video capture is over, release the video capture and destroyAllWindows
-video_capture.release()
+video_capture.release() # 오픈한 캡쳐 객체를 해제
 cv2.destroyAllWindows()
+
+all_study_time=end-start
+print('오늘의 총 공부시간은:')
+print(time.strftime("%H:%M:%S", time.gmtime(all_study_time)))
