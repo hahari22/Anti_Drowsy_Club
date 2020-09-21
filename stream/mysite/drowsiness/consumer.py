@@ -18,7 +18,6 @@ class ChatConsumer(WebsocketConsumer):
 
         print('good bye')
         try:
-            print('yea!😆')
             if self.camera:
                 (self.camera).stop()
                 del self.camera
@@ -27,7 +26,6 @@ class ChatConsumer(WebsocketConsumer):
             print('i got it!😆', ex)
 
     def receive(self, text_data):
-        print('wowwwww !!!!')
         text_data_json = json.loads(text_data)
         
         message = text_data_json['message']
@@ -38,7 +36,6 @@ class ChatConsumer(WebsocketConsumer):
             self.thread = threading.Thread(target=self.circle, args=())
             self.thread.daemon = True
             self.thread.start()
-            # pass
 
         else:
             try:
@@ -60,5 +57,4 @@ class ChatConsumer(WebsocketConsumer):
                     self.send(bytes_data=frame)
             except Exception as ex:
                 print('done😍', ex)
-                print('out')
                 break

@@ -75,10 +75,10 @@ class Drowsiness:
         return ear
         
     def init_open_ear(self) :
-        time.sleep(5)
+        time.sleep(3)
         print("open init time sleep")
         ear_list = []
-        th_message1 = Thread(target = self.init_message)
+        th_message1 = Thread(target = self.open_message)
         th_message1.deamon = True
         th_message1.start()
         for i in range(7) :
@@ -91,10 +91,10 @@ class Drowsiness:
     def init_close_ear(self) : 
         time.sleep(2)
         (self.th_open).join()
-        time.sleep(5)
+        time.sleep(3)
         print("close init time sleep")
         ear_list = []
-        th_message2 = Thread(target = self.init_message)
+        th_message2 = Thread(target = self.close_message)
         th_message2.deamon = True
         th_message2.start()
         time.sleep(1)
@@ -107,9 +107,17 @@ class Drowsiness:
         print("close list =", ear_list, "\nCLOSE_EAR =", self.CLOSE_EAR, "\n")
         print("The last EAR_THRESH's value :",self.EAR_THRESH, "\n")
 
-    def init_message(self) :
-        print("init_message")
-        alarm.sound_alarm("drow/init_sound.mp3")
+    # def init_message(self, name) :
+    #     print("init_message")
+    #     alarm.sound_alarm("drow/"+name)
+
+    def open_message(self):
+        print("open_message")
+        alarm.sound_alarm("drow/open.mp3")
+
+    def close_message(self):
+        print('close_message')
+        alarm.sound_alarm('drow/close.mp3')
 
     def wake_up(self):
         print('wake up')
