@@ -3,7 +3,7 @@
 
 * 발표자료 <a href="https://github.com/LeeSangMin96/Anti_Drowsy_Club/blob/master/%EB%AF%B8%EB%8B%88%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8%20%EB%B3%B4%EA%B3%A0%EC%84%9C%20(1).pdf">[CLICK]</a>
 * 발표영상 <a href="https://github.com/LeeSangMin96/Anti_Drowsy_Club/blob/master/KakaoTalk_20200922_165903213.mp4">[CLICK]</a>
-
+</br>
 ## Subject
 * 사용자는 웹페이지에 접속하여 알람음을 입력.<br/>
 ex)“상민아, 일어나 공부해야지.” 
