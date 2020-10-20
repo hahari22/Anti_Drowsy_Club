@@ -5,7 +5,7 @@
 * 발표영상 <a href="https://github.com/LeeSangMin96/Anti_Drowsy_Club/blob/master/KakaoTalk_20200922_165903213.mp4">[CLICK]</a>
 
 ## Subject
-* 사용자는 웹페이지에 접속하여 알람음을 입력.
+* 사용자는 웹페이지에 접속하여 알람음을 입력.<br/>
 ex)“상민아, 일어나 공부해야지.” 
 * 웹캠을 통해 사용자의 얼굴을 인식하여 졸음 감지
 * 졸음 감지후, 사용자가 입력한 알람음을 TTS를 통해 출력.
